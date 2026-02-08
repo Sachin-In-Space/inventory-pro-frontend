@@ -1,0 +1,78 @@
+<div class="space-y-8">
+  <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Reports</h2>
+
+  <!-- Today's Stats (From View) -->
+  @if (statsService.dailySales().length > 0) {
+  <!-- We assume the first entry is today or latest -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-base-300 p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Latest Day Orders</h3>
+      <p class="text-4xl font-bold text-primary">{{ statsService.dailySales()[0].totalOrders }}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Date: {{ statsService.dailySales()[0]._id }}</p>
+    </div>
+    <div class="bg-white dark:bg-base-300 p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Latest Day Revenue</h3>
+      <p class="text-4xl font-bold text-primary">{{ statsService.dailySales()[0].totalRevenue |
+        currency:'INR':'symbol-narrow' }}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Date: {{ statsService.dailySales()[0]._id }}</p>
+    </div>
+  </div>
+  }
+
+  <!-- Monthly Stats (Kept existing client-side logic for now as requested view was for daily sales) -->
+  <div class="bg-white dark:bg-base-300 p-6 rounded-xl shadow-md">
+    <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">This Month's Customer Loyalty</h3>
+    <div class="grid grid-cols-2 gap-4 text-center">
+      <div>
+        <p class="text-3xl font-bold">{{ monthlyStats().repeatBuyers }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Repeat Customers</p>
+      </div>
+      <div>
+        <p class="text-3xl font-bold">{{ monthlyStats().totalBuyers }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Total Unique Customers</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Lists -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-base-300 p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Products Added Today</h3>
+      <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+        @for(log of dailyProductUploads(); track log.id) {
+        <div class="p-3 bg-gray-50 dark:bg-base-200 rounded-md">
+          <p class="font-medium text-sm">{{ log.productName }}</p>
+          <p class="text-xs text-gray-500">{{ log.details }}</p>
+        </div>
+        } @empty {
+        <p class="text-gray-500 dark:text-gray-400 text-center py-4">No new products were added today.</p>
+        }
+      </div>
+    </div>
+
+    <!-- Sales History Table (New) -->
+    <div class="bg-white dark:bg-base-300 p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Recent Daily Sales</h3>
+      <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+        <table class="w-full text-sm text-left">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="px-3 py-2">Date</th>
+              <th scope="col" class="px-3 py-2 text-right">Orders</th>
+              <th scope="col" class="px-3 py-2 text-right">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(stat of statsService.dailySales(); track stat._id) {
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <td class="px-3 py-2 font-medium">{{ stat._id }}</td>
+              <td class="px-3 py-2 text-right">{{ stat.totalOrders }}</td>
+              <td class="px-3 py-2 text-right">{{ stat.totalRevenue | currency:'INR':'symbol-narrow' }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
