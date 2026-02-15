@@ -4,6 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "ng serve",
+    "start:local": "ng serve --configuration=local",
+    "start-local": "npm run start:local",
+    "start:dev": "ng serve --configuration=development",
+    "start-dev": "npm run start:dev",
+    "start:prod": "ng serve --configuration=production",
+    "start-prod": "npm run start:prod",
     "dev": "ng serve",
     "build": "ng build",
     "preview": "ng serve --configuration=production"

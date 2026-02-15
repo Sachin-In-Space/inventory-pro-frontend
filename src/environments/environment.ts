@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    apiUrl: 'http://localhost:5000/api', // Point to our local Node.js backend
+    apiUrl: 'http://localhost:4000/api', // Point to our local Node.js backend
     firebaseConfig: {
         apiKey: "AIzaSyCBQlJGhyrHPPukXz4JLRGSIVLaloCZQGo",
         authDomain: "localmart-318f0.firebaseapp.com",
