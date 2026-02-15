@@ -3,12 +3,12 @@ import { Injectable, signal } from '@angular/core';
 import { User, UserRole } from '../models/inventory.models';
 
 const PERMISSIONS: Record<UserRole, string[]> = {
-  'Admin': ['viewDashboard', 'viewProducts', 'editProducts', 'deleteProducts', 'editPrices', 'editStock', 'viewLogs', 'manageSettings', 'viewOrders', 'manageOrders', 'viewReports'],
+  'Admin': ['viewDashboard', 'viewProducts', 'editProducts', 'deleteProducts', 'editPrices', 'editStock', 'viewLogs', 'manageSettings', 'viewOrders', 'manageOrders', 'createOrders', 'viewReports'],
   'InventoryManager': ['viewDashboard', 'viewProducts', 'editProducts', 'editStock', 'viewLogs'],
   'Captain': ['viewDashboard', 'viewProducts', 'viewOrders', 'createOrders'],
   'Delivery': ['viewDashboard', 'viewOrders', 'updateOrderStatus'],
   'Viewer': ['viewDashboard', 'viewProducts'],
-  'Super': ['viewDashboard', 'viewProducts', 'editProducts', 'deleteProducts', 'editPrices', 'editStock', 'viewLogs', 'manageSettings', 'viewOrders', 'manageOrders', 'viewReports']
+  'Super': ['viewDashboard', 'viewProducts', 'editProducts', 'deleteProducts', 'editPrices', 'editStock', 'viewLogs', 'manageSettings', 'viewOrders', 'manageOrders', 'createOrders', 'viewReports']
 };
 
 @Injectable({ providedIn: 'root' })
@@ -16,6 +16,7 @@ export class UserService {
   // Initialize with a default Admin user, but name can be overwritten by real auth
   private _currentUser = signal<User>({
     name: 'Admin User',
+    email: 'admin@localmart.com',
     role: 'Admin',
     permissions: PERMISSIONS['Admin']
   });
@@ -34,9 +35,10 @@ export class UserService {
   }
 
   // Call this when real login happens to set name/email/role
-  setProfile(name: string, role: UserRole) {
+  setProfile(name: string, role: UserRole, email?: string) {
     this._currentUser.set({
       name: name,
+      email: email,
       role: role,
       permissions: PERMISSIONS[role] || []
     });
@@ -49,7 +51,7 @@ export class UserService {
     }
 
     // Switch to target user
-    this.setProfile(targetUser.name, targetUser.role);
+    this.setProfile(targetUser.name, targetUser.role, targetUser.email);
   }
 
   exitSimulation() {

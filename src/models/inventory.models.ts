@@ -40,7 +40,9 @@ export interface AuditLog {
 export type UserRole = 'Admin' | 'InventoryManager' | 'Viewer' | 'Captain' | 'Delivery' | 'Super';
 
 export interface User {
+  id?: string;
   name: string;
+  email?: string;
   role: UserRole;
   permissions: string[];
 }

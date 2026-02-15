@@ -58,7 +58,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
                 
                 @if (canSimulate(user)) {
                   <button (click)="simulateUser(user)" 
-                    class="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-opacity-90">
+                    class="px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-opacity-90 transition-colors shadow-sm">
                     Simulate
                   </button>
                 }
@@ -161,7 +161,8 @@ export class UserListModalComponent implements OnInit {
   }
 
   canSimulate(targetUser: any): boolean {
-    return true;
+    const currentUser = this.userService.currentUser();
+    return currentUser.role === 'Super' || currentUser.role === 'Admin';
   }
 
   simulateUser(user: any) {
