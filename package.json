@@ -13,7 +13,7 @@
     "start-prod": "npm run start:prod",
     "dev": "ng serve",
     "build": "ng build",
-    "preview": "ng serve --configuration=production"
+    "preview": "ng serve --configuration=production --host 0.0.0.0"
   },
   "dependencies": {
     "@angular/build": "^18.0.0",
