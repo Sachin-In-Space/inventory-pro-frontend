@@ -32,28 +32,26 @@
   </button>
 
   <!-- Filters -->
-  <div
-    class="md:grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-card dark:bg-card-dark rounded-xl shadow-sm mb-6 border border-border-light dark:border-border-dark"
-    [class.grid]="showFilters()" [class.hidden]="!showFilters()">
-    <div>
-      <label for="search" class="text-sm font-medium text-text-muted dark:text-text-muted-dark">Search Product</label>
+  <!-- Filters -->
+  <div class="md:flex md:items-center gap-4 mb-6" [class.block]="showFilters()" [class.hidden]="!showFilters()">
+    <div class="flex-1">
       <input id="search" type="text" [value]="searchTerm()" (input)="onSearchTermChange($event)"
         placeholder="Search by name or SKU..."
-        class="mt-1 block w-full px-3 py-2 bg-card dark:bg-card-dark border border-border-light dark:border-border-dark rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
+        class="block w-full px-4 py-2 bg-card dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
     </div>
-    <div>
-      <label for="status" class="text-sm font-medium text-text-muted dark:text-text-muted-dark">Status</label>
+    <div class="w-full md:w-48">
       <select id="status" [value]="filterStatus()" (change)="onStatusChange($event)"
-        class="mt-1 block w-full px-3 py-2 bg-card dark:bg-card-dark border border-border-light dark:border-border-dark rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
+        class="block w-full px-4 py-2 bg-card dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
         <option value="all">All Statuses</option>
         <option value="Active">Active</option>
         <option value="Inactive">Inactive</option>
         <option value="Out of Stock">Out of Stock</option>
       </select>
     </div>
-    <div class="flex items-end justify-end">
+    <div class="flex items-center">
       @if(isAnyFilterActive()) {
-      <button (click)="clearAllFilters()" class="text-sm font-medium text-primary hover:underline">Clear All
+      <button (click)="clearAllFilters()"
+        class="px-4 py-2 text-primary font-medium hover:bg-primary/10 rounded-lg transition-colors">Clear
         Filters</button>
       }
     </div>

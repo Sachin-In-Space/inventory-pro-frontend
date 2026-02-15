@@ -22,7 +22,7 @@ export interface Product {
 }
 
 export interface Category {
-  id: number; // Categories might still be static/numbered, keeping as number for now unless we migrate them too
+  id: string;
   name: string;
 }
 
@@ -37,7 +37,7 @@ export interface AuditLog {
   orderId?: string; // Changed
 }
 
-export type UserRole = 'Admin' | 'InventoryManager' | 'Viewer' | 'Captain' | 'Delivery';
+export type UserRole = 'Admin' | 'InventoryManager' | 'Viewer' | 'Captain' | 'Delivery' | 'Super';
 
 export interface User {
   name: string;

@@ -4,17 +4,13 @@
   <!-- Category Management -->
   <div class="bg-white dark:bg-base-300 p-6 rounded-xl shadow-md">
     <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Manage Categories</h3>
-    
+
     <div class="flex gap-2 mb-6">
-      <input 
-        type="text" 
-        placeholder="New category name" 
-        [value]="newCategoryName()"
-        (input)="newCategoryName.set($any($event.target).value)"
-        (keyup.enter)="addCategory()"
-        class="flex-grow px-3 py-2 bg-white dark:bg-base-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-      />
-      <button (click)="addCategory()" [disabled]="!newCategoryName().trim()" class="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-75 disabled:bg-opacity-50 disabled:cursor-not-allowed">
+      <input type="text" placeholder="New category name" [value]="newCategoryName()"
+        (input)="newCategoryName.set($any($event.target).value)" (keyup.enter)="addCategory()"
+        class="flex-grow px-4 py-2 bg-card dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" />
+      <button (click)="addCategory()" [disabled]="!newCategoryName().trim()"
+        class="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-75 disabled:bg-opacity-50 disabled:cursor-not-allowed">
         Add
       </button>
     </div>
@@ -22,17 +18,19 @@
     <div class="border-t dark:border-gray-700 pt-4">
       <div class="flex flex-wrap gap-3">
         @for(category of categoryService.categories(); track category.id) {
-          <span class="group inline-flex items-center gap-x-2 py-1.5 pl-3 pr-2 rounded-full text-sm font-medium bg-primary/10 text-primary dark:bg-primary/20 dark:text-white transition-colors">
-            {{ category.name }}
-            <button (click)="deleteCategory(category.id)" type="button" class="opacity-0 group-hover:opacity-100 flex-shrink-0 h-5 w-5 inline-flex items-center justify-center rounded-full text-red-500/70 hover:bg-red-500/20 hover:text-red-600 focus:outline-none focus:bg-red-500/30 dark:text-red-400/70 dark:hover:text-red-400 transition-opacity">
-              <span class="sr-only">Remove {{ category.name }}</span>
-              <svg class="h-3.5 w-3.5" stroke="currentColor" fill="none" viewBox="0 0 8 8">
-                <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
-              </svg>
-            </button>
-          </span>
+        <span
+          class="group inline-flex items-center gap-x-2 py-1.5 pl-3 pr-2 rounded-full text-sm font-medium bg-primary/10 text-primary dark:bg-primary/20 dark:text-white transition-colors">
+          {{ category.name }}
+          <button (click)="deleteCategory(category.id)" type="button"
+            class="flex-shrink-0 h-5 w-5 inline-flex items-center justify-center rounded-full text-red-500/70 hover:bg-red-500/20 hover:text-red-600 focus:outline-none focus:bg-red-500/30 dark:text-red-400/70 dark:hover:text-red-400 transition-colors">
+            <span class="sr-only">Remove {{ category.name }}</span>
+            <svg class="h-3.5 w-3.5" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+              <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+            </svg>
+          </button>
+        </span>
         } @empty {
-          <p class="w-full text-center text-gray-500 dark:text-gray-400 py-4">No categories created yet.</p>
+        <p class="w-full text-center text-gray-500 dark:text-gray-400 py-4">No categories created yet.</p>
         }
       </div>
     </div>
@@ -41,19 +39,24 @@
   <!-- Bulk Product Upload -->
   <div class="bg-white dark:bg-base-300 p-6 rounded-xl shadow-md">
     <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Bulk Product Upload</h3>
-    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Upload a CSV or Excel file to add multiple products at once. This is a UI demonstration.</p>
+    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Upload a CSV or Excel file to add multiple products at
+      once. This is a UI demonstration.</p>
     <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
-        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-        <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
-            <label for="file-upload" class="relative cursor-pointer rounded-md bg-white dark:bg-base-300 font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-900 hover:text-indigo-500">
-                <span>Upload a file</span>
-                <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="handleBulkUpload($event)">
-            </label>
-            <p class="pl-1">or drag and drop</p>
-        </div>
-        <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">CSV, XLS, XLSX up to 10MB</p>
+      <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"
+        aria-hidden="true">
+        <path
+          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
+        <label for="file-upload"
+          class="relative cursor-pointer rounded-md bg-white dark:bg-base-300 font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-900 hover:text-indigo-500">
+          <span>Upload a file</span>
+          <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="handleBulkUpload($event)">
+        </label>
+        <p class="pl-1">or drag and drop</p>
+      </div>
+      <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">CSV, XLS, XLSX up to 10MB</p>
     </div>
   </div>
 </div>

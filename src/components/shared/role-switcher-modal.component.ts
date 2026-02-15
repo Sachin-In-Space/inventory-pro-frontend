@@ -1,15 +1,15 @@
-
-import { Component, ChangeDetectionStrategy, signal, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, output, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserRole } from '../../models/inventory.models';
-import { MongoAuthService } from '../../services/mongo-auth.service';
+import { UserService } from '../../services/user.service';
+import { FirebaseAuthService } from '../../services/firebase-auth.service';
 
 @Component({
-    selector: 'app-role-switcher-modal',
-    standalone: true,
-    imports: [CommonModule, FormsModule],
-    template: `
+  selector: 'app-role-switcher-modal',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" (click)="close.emit()">
       <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden" (click)="$event.stopPropagation()">
         
@@ -23,64 +23,64 @@ import { MongoAuthService } from '../../services/mongo-auth.service';
         </div>
 
         <div class="p-6 space-y-4">
-          <p class="text-sm text-gray-500">
-            Please authenticate to switch to the 
-            <span class="font-bold text-gray-900 uppercase">{{ targetRole() }}</span> role.
+          <p class="text-base text-gray-600">
+            You are about to switch your role to 
+            <span class="font-bold text-blue-600 text-lg">{{ targetRole() }}</span>.
           </p>
+          
+          @if (isSimulationMode()) {
+            <p class="text-sm text-green-700 bg-green-50 p-3 rounded-lg border border-green-100 flex items-start">
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span><strong>Super User Mode:</strong> You can instantly simulate this role without logging out.</span>
+            </p>
+          } @else {
+             <p class="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-100 flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-amber-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <span><strong>Action Required:</strong> Switching roles will log you out. You must sign in with an account that has the <strong>{{ targetRole() }}</strong> role.</span>
+            </p>
+          }
 
-          <form (ngSubmit)="login()" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" [(ngModel)]="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input type="password" [(ngModel)]="password" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
-            </div>
-
-             <div *ngIf="errorMessage()" class="p-3 rounded-lg bg-red-50 text-red-600 text-sm">
-                {{ errorMessage() }}
-             </div>
-
-            <button type="submit" [disabled]="isLoading()" class="w-full py-2.5 px-4 bg-gray-900 hover:bg-black text-white font-medium rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all">
-              {{ isLoading() ? 'Authenticating...' : 'Confirm Role Switch' }}
+          <div class="flex gap-3 mt-6">
+            <button (click)="close.emit()" class="flex-1 py-2.5 px-4 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                Cancel
             </button>
-          </form>
+            <button (click)="confirmSwitch()" class="flex-1 py-2.5 px-4 bg-gray-900 hover:bg-black text-white font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                Confirm Switch
+            </button>
+          </div>
         </div>
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     :host {
         display: block;
     }
   `]
 })
 export class RoleSwitcherModalComponent {
-    targetRole = signal<UserRole>('Viewer');
-    close = output();
-    roleAuthenticated = output<UserRole>();
+  targetRole = signal<UserRole>('Viewer');
+  close = output();
+  roleAuthenticated = output<UserRole>();
 
-    email = '';
-    password = '';
-    isLoading = signal(false);
-    errorMessage = signal('');
+  private userService = inject(UserService);
+  private authService = inject(FirebaseAuthService);
 
-    constructor(private mongoAuth: MongoAuthService) { }
+  // Computed check for simulation mode
+  isSimulationMode = computed(() => this.userService.isSuper);
 
-    async login() {
-        this.isLoading.set(true);
-        this.errorMessage.set('');
-
-        try {
-            await this.mongoAuth.login(this.email, this.password);
-            this.roleAuthenticated.emit(this.targetRole());
-            this.close.emit();
-        } catch (err: unknown) {
-            this.errorMessage.set('Invalid credentials. Please try again.');
-        } finally {
-            this.isLoading.set(false);
-        }
+  confirmSwitch() {
+    if (this.userService.isSuper) {
+      // Super User can simulate instantly
+      this.roleAuthenticated.emit(this.targetRole());
+      this.close.emit();
+    } else {
+      // Standard users must logout to switch context
+      this.authService.logout();
     }
+  }
 }
